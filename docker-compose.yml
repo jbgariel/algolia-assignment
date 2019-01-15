@@ -1,0 +1,14 @@
+version: '3.2'
+
+services:
+  algolia-assignement:
+    build:
+      context: .
+      dockerfile: build/Dockerfile
+    container_name: algolia-assignement
+    ports:
+     - 5000:5000 # Flask API
+     - 9999:9999 # Jupyter notebooks
+     - 6006:6006 # Tensorboard
+    volumes:
+     - ./:/usr/src/app/

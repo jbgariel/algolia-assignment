@@ -9,7 +9,7 @@ from sklearn.datasets import load_svmlight_file
 from xgboost import DMatrix
 
 
-# 🤷‍♂️ Not understand why XgBOOST needs that.. Tensorflow doesn't..
+# 🤷‍♂️ Dont understand why XgBOOST needs that.. Tensorflow doesn't..
 def group_qid(list_):
     output = []
     for idx, val in enumerate(list_):

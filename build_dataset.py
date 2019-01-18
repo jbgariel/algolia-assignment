@@ -7,7 +7,6 @@ import argparse
 import nltk
 import numpy as np
 import pandas as pd
-import requests
 
 from collections import Counter
 from Levenshtein import distance
@@ -17,35 +16,37 @@ from sklearn.preprocessing import LabelEncoder
 
 from notebooks.utils import import_data
 
-nltk.download('stopwords')
+nltk.download('stopwords', quiet=True)
 
 DATA_DIR = 'data'
-HN_API_URL = 'https://hacker-news.firebaseio.com/v0/item/{}.json'
+HN_DATA = 'hn_data_1801.tsv'
 STOPWORDS = set(stopwords.words("english"))
 
 
 # If a word appears only once, we ignore it completely (likely a typo)
 # Epsilon defines a smoothing constant, which makes the effect of extremely
 # rare words smaller
-def get_weight(count, eps=5000, min_count=2):
+def get_weight(count, eps=1000, min_count=2):
     if count < min_count:
         return 0
     else:
         return 1 / (count + eps)
 
 
-def enrich_data(id):
-    r = requests.get(HN_API_URL.format(id))
-    if r.status_code == 200:
-        value = r.json()
-        print(str(value).encode('utf-8'))
-    else:
-        print('error with {}'.format(id))
-    return [value.get('title', value.get('text', None)),
-            value.get('score', None), value.get('descendants', None),
-            value.get('type', None), value.get('by', None)]
+# Get additional data from HN
+def enrich_data(df_expand):
+    hn_data = pd.read_csv(HN_DATA, sep='\t', low_memory=False)
+    hn_data = hn_data[np.isfinite(hn_data['hit'])]
+    hn_data['hit'] = hn_data['hit'].astype(int)
+    hn_data['title'] = hn_data['title'].astype(str)
+    df_expand['hit'] = df_expand['hit'].astype(int)
+    df_expand = df_expand.merge(hn_data, on='hit')
+    df_expand[['title', 'type', 'by']] = df_expand[['title', 'type', 'by']].fillna('')
+    df_expand['score'] = df_expand['score'].fillna(0)
+    return df_expand
 
 
+# Remove queries without click and only one hit
 def filter_data(data):
     data['nb_clicks'] = data['clicks'].apply(
         lambda x: len(x) if isinstance(x, list) else 0)
@@ -57,6 +58,8 @@ def filter_data(data):
     return data
 
 
+# Custom word match with TfIDF from
+# https://www.kaggle.com/anokas/data-analysis-xgboost-starter-0-35460-lb
 def tfidf_word_match_share(string_1, string_2, weights):
     q1words = {}
     q2words = {}
@@ -76,6 +79,8 @@ def tfidf_word_match_share(string_1, string_2, weights):
     return R
 
 
+# Custom word match from
+# https://www.kaggle.com/anokas/data-analysis-xgboost-starter-0-35460-lb
 def word_match_share(row):
     q1words = {}
     q2words = {}
@@ -94,22 +99,24 @@ def word_match_share(row):
 
 
 def main():
-
+    # Get flags
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--call_hn',
-        help=('Call HN API to get data.'),
-        default=False,
-        type=bool)
+        '--light',
+        help=('Compute less data for quicker iterations.'),
+        action='store_true')
     known_args, _ = parser.parse_known_args()
 
     # Import data
-    data = import_data(DATA_DIR).head(10000)
-    print('Imported {} lines'.format(len(data.index)))
+    print('> Loading data...')
+    data = import_data(DATA_DIR)
+    if known_args.light:
+        data = data.head(1000)
+    print('> Imported {} lines'.format(len(data.index)))
 
     # Filter data
     data = filter_data(data)
-    print('Filter data: {} lines'.format(len(data.index)))
+    print('> Filtered data: {} lines'.format(len(data.index)))
 
     # Expand dataframe, one line = one hit
     lens = [len(item) for item in data['hits']]
@@ -119,30 +126,23 @@ def main():
                               'timestamp': np.repeat(data['timestamp'].values, lens),
                               'hit': np.hstack(data['hits'])
                               })
+    print('> Expanded to: {} lines'.format(len(df_expand.index)))
 
-    # Determine where are the clicks
+    # Detect where are the clicks
     df_expand['target'] = 0
     for idx, row in df_expand.iterrows():
+        if idx % 1000 == 0:
+            print('  > {}/{}'.format(idx, len(df_expand.index)),
+                  end="\r", flush=True)
         if any(click['object_id'] == row['hit'] for click in row['clicks']):
             df_expand.loc[idx, 'target'] = 1
-    print('{}/{} clicks in dataframe'.format(sum(df_expand.target), len(df_expand.index)))
+    print('> {}/{} rows with clicks in dataframe'.format(sum(df_expand.target), len(df_expand.index)))
 
     # Enrich with HN API
-    if known_args.call_hn:
-        df_expand[['title', 'score', 'descendants', 'type', 'by']] = df_expand.apply(
-            lambda row: pd.Series(enrich_data(row['hit'])), axis=1)
-    else:
-        hn_data = pd.read_csv('hn_data_1801.tsv', sep='\t')
-        hn_data = hn_data[np.isfinite(hn_data['hit'])]
-        hn_data['hit'] = hn_data['hit'].astype(int)
-        hn_data['title'] = hn_data['title'].astype(str)
-        df_expand['hit'] = df_expand['hit'].astype(int)
-        df_expand = df_expand.merge(hn_data, on='hit')
-        df_expand[['title', 'type', 'by']] = df_expand[['title', 'type', 'by']].fillna('')
-        df_expand['score'] = df_expand['score'].fillna(0)
+    df_expand = enrich_data(df_expand)
 
     '''
-    FEATURES BUILDING
+    FEATURES ENGINEERING
     '''
 
     # Computing TF-IDF weights
@@ -163,17 +163,21 @@ def main():
     # Transform query_id to incremental id (needed for LibSVM format)
     df_expand['qid'] = LabelEncoder().fit_transform(df_expand['query_id'])
 
-    # Order dataframe by qid
+    # Order dataframe by qid (needed for LibSVM format)
     df_expand.sort_values(by=['qid'], inplace=True, ascending=False)
 
     # Split in train, test, valid, not using train_test_split for avoiding shuffling
     first_cut = int(len(df_expand)*0.80)
     second_cut = first_cut + int(len(df_expand)*0.10)
-    train = df_expand.head(first_cut)
+    train = df_expand.iloc[:first_cut, :]
     test = df_expand.iloc[first_cut:second_cut, :]
-    valid = df_expand.tail(second_cut)
+    valid = df_expand.iloc[second_cut:, :]
+    print('> train: {} rows, test: {} rows, valid: {} rows'.format(len(train), len(test), len(valid)))
 
-    # Save to LibSVM format
+    '''
+    SAVE TO LIBSVM FORMAT
+    '''
+
     features = ['f1_levenshtein_distance', 'f2_log1_score',
                 'f3_word_match', 'f4_tfidf_word_match']
 

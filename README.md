@@ -10,7 +10,7 @@
 * 🐳 **Out of the box**, with dockerization
 
 ## The dataset
-The dataset was provided by algolia. The data comes from [HN Search](https://hn.algolia.com/)
+The dataset was provided by algolia. The data comes from [Hacker News Search](https://hn.algolia.com/).
 
 ## Dependencies
 Docker:
@@ -27,7 +27,7 @@ docker-compose up -d
 
 ## 1- 🔍 Analyzing and validating the data
 
-> Jupyter notebook should be activated, go to [hnsearch_analysis](http://localhost:8889/notebooks/hnsearch_analysis.ipynb#)
+> Jupyter notebook should be activated, go to [hnsearch_analysis](http://localhost:9999/notebooks/hnsearch_analysis.ipynb#)
 
 ### Key findings
 * There are some missing lines at the end of each file, I did not take them into account
@@ -36,7 +36,7 @@ docker-compose up -d
 
 ## 2- 💫 Performance metrics of Algolia Search
 
-> Jupyter notebook should be activated, go to [algoliasearch_metrics](http://localhost:8889/notebooks/algoliasearch_metrics.ipynb#)
+> Jupyter notebook should be activated, go to [algoliasearch_metrics](http://localhost:9999/notebooks/algoliasearch_metrics.ipynb#)
 
 This notebook propose a serie of performance metrics to evaluate Algolia Search based on the given dataset.
 
@@ -56,12 +56,12 @@ Schema
 
 ### 1- Feature Engineering
 
-Run the following commands:
+Run the following commands (remove `--light` flag to compute the whole dataset):
 ```
-docker exec -it algolia-assignement python build_dataset.py
+docker exec -it algolia-assignement python build_dataset.py --light
 ```
 
-The data is filtered on query with clicks and at least 2 hits (there is no ranking if only one hit is return 😉). Some necessary HN data (post title, author, score etc) was queried with a simple script (`docker exec -it algolia-assignement python extract_hn_data.py`), this script took a few hours to extract the data so directly added the data to the repo.
+The data is filtered on query with clicks and at least 2 hits (there is no ranking if only one hit is returned 😉). Some necessary HN data (post title, author, score etc) was queried with a simple script (`docker exec -it algolia-assignement python extract_hn_data.py`), this script took a few hours to run so the data is directly joined to the git repo.
 
 The proposed features are:
 * Keyword match in query
@@ -78,9 +78,9 @@ For Learning-to-rank algorithms, the output data must follow [the LIBSVM format]
 
 ### 2- Learning to Rank Algorithms
 
-Two algorithm have beed tested:
-* XgBoost
-* Tensorflow Ranking (freshly release in december 2018)
+Two algorithms have beed tested:
+* **XgBoost**
+* **Tensorflow Ranking** *(freshly release in december 2018 👌)*
 
 For XgBoost, run the command:
 ```
@@ -91,6 +91,12 @@ For Tensorflow Ranking, run the command:
 ```
 docker exec -it algolia-assignement python rank_tensorflow.py
 ```
+
+Tensorboard logs are saved, to see them:
+```
+docker exec -it algolia-assignement tensorboard --logdir=<ranker.model_dir output>
+```
+...and visit [localhost:6006](http://localhost:6006)
 
 ### 3- Evaluation metrics and results
 

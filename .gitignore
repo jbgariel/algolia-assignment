@@ -4,3 +4,6 @@ __pycache__
 *.json
 *.tsv
 *.zip
+*.train
+*.vali
+*.test

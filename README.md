@@ -1,12 +1,12 @@
 # Algolia Assignement
 
-> This repository provide an end-to-end workflow and steps to analyze, train and serve a machine learning model. 
+> This repository provide an end-to-end ML experiment and steps to analyze, build and test machine learning models. 
 
 ## Features
 * 🔍 **Data Analysis and validation** of HN dataset, running on a local jupiter notebook
 * 💫 **Algolia Search performance metrics** on local jupiter notebook
 * 🏋️‍♀️ **Dataset preparation and features engineering**
-* 🚀 **ML Experiments** for Learning to rank algorithms
+* 🚀 **ML Experiments** for Learning-to-rank algorithms with **Tensorflow Ranking** and **Xgboost**
 * 🐳 **Out of the box**, with dockerization
 
 ## The dataset
@@ -19,7 +19,7 @@ Docker:
 
 ## Setup the container
 
-Build and run the container:
+Clone the repo then build and run the container:
 ```
 docker-compose build
 docker-compose up -d
@@ -47,13 +47,11 @@ This notebook propose a serie of performance metrics to evaluate Algolia Search 
 
 ## 3- 👩‍🔬 Learning to Rank experiment
 
-Algolia search engine returns a list of ranked document, 
-
-Schema
+>>> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widly used by google for its search engine. We could try some experiments to try to improve ranking in returned documents.
 
 **Could we improve Algolia ranking with machine learning technics?**
 
-> ⚠️ Due to time constrains, some shortcuts have been made, like not taking into account filters etc..
+> ⚠️ Due to time constrains, some shortcuts have been made, like not taking into account filters etc.. I also did not do a lot of algorithm tuning and took out-of-the-box algorithms..
 
 ### 1- Feature Engineering
 
@@ -75,7 +73,7 @@ Some other features could be used (not implemented):
 * Cosine Similarity Between aggregated Word2Vec of query and title
 * Post age (query_timestamp - post_timestamp)
 
-For Learning-to-rank algorithms, the output data must follow [the LIBSVM format](https://sourceforge.net/p/lemur/wiki/RankLib%20File%20Format).
+For Learning-to-rank algorithms, the output data must follow [the LIBSVM format](https://sourceforge.net/p/lemur/wiki/RankLib%20File%20Format). This format is well known in Learning-to-rank but not in other ML domains.
 
 ### 2- Learning to Rank Algorithms
 
@@ -101,19 +99,21 @@ docker exec -it algolia-assignement tensorboard --logdir=<ranker.model_dir outpu
 
 ### 3- Evaluation metrics and results
 
-* Due to time constrain (and lack of implemented Learning to rank metrics), Xgboost metrics were not computed (there is no standard way of computing metrics)
+* Due to time constrain (and lack of implemented Learning-to-rank metrics), Xgboost metrics were not computed (there is no standard way of computing metrics) 🤷‍♂️
 * The most complicated part is actually building the training data frame in the LibSVM format (I did not know this format before)
 * ML algorithm are performing well, the training is super fast even without GPUs
-* Tensorflow Ranking increased significally the performance of Algolia Search (see graph below)
-* I also found that some Algolia competitors (elasticsearch) are building [ML plugin](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html) for Learning-to-rank
-* Algolia could also leverage other data to improve click rate, like users, ip address, history etc..
+* Tensorflow Ranking increased significally the performance of Algolia Search (see graph below), the average relevance position moved from **4.55** to **3.45** with tensorflow (more than one position gained 🎉!)
 
 ![alt text](metrics.png)
 
-## Takeaway
+**This simple experiment shows the posibility for Algolia to improve its search relevance with machine learning technics 🧙‍♂️. This is only a short analysis and the work is amazingly huge to achieve it (in term of scalability, robusteness of algorithms, data processing, retraining etc..) but this is a super cool topic 😎!**
+
+## Takeaways
 * Algolia search is performing super well 👏 both in time performance and relevance
-* Learning-to-rank is not well documented, this is a secret domain (google is not releasing a lot of stuff on that 😉)
-* Machine Learning could improve Algolia search relevance and click rate
+* Learning-to-rank is not well documented, this is a secret domain (google is not releasing a lot of stuff on that 🕵️‍♀️)
+* Machine Learning could improve Algolia search relevance and click rate ↗️
+* Algolia could also leverage other data to improve click rate, like users, ip address, history etc..
+* I also found that some Algolia competitors (elasticsearch) are building [ML plugin](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html) for Learning-to-rank
 
 
 

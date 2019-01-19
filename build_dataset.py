@@ -128,6 +128,9 @@ def main():
                               })
     print('> Expanded to: {} lines'.format(len(df_expand.index)))
 
+    # Enrich with HN API
+    df_expand = enrich_data(df_expand)
+
     # Detect where are the clicks
     df_expand['target'] = 0
     for idx, row in df_expand.iterrows():
@@ -137,9 +140,6 @@ def main():
         if any(click['object_id'] == row['hit'] for click in row['clicks']):
             df_expand.loc[idx, 'target'] = 1
     print('> {}/{} rows with clicks in dataframe'.format(sum(df_expand.target), len(df_expand.index)))
-
-    # Enrich with HN API
-    df_expand = enrich_data(df_expand)
 
     '''
     FEATURES ENGINEERING

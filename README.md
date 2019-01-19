@@ -25,6 +25,8 @@ docker-compose build
 docker-compose up -d
 ```
 
+Then copy and paste the unzip data in the `/data` directory
+
 ## 1- 🔍 Analyzing and validating the data
 
 > Jupyter notebook should be activated, go to [hnsearch_analysis](http://localhost:9999/notebooks/hnsearch_analysis.ipynb#)
@@ -47,7 +49,7 @@ This notebook propose a serie of performance metrics to evaluate Algolia Search 
 
 ## 3- 👩‍🔬 Learning to Rank experiment
 
->>> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widly used by google for its search engine. We could try some experiments to try to improve ranking in returned documents.
+> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widly used by google for its search engine. We could try some experiments to try to improve ranking in returned documents.
 
 **Could we improve Algolia ranking with machine learning technics?**
 
@@ -75,11 +77,13 @@ Some other features could be used (not implemented):
 
 For Learning-to-rank algorithms, the output data must follow [the LIBSVM format](https://sourceforge.net/p/lemur/wiki/RankLib%20File%20Format). This format is well known in Learning-to-rank but not in other ML domains.
 
+The result of this script is three files (`hn.train`, `hn.test` and `hn.vali`). The complete script takes fews hours to run, so I directly attached the data in the repo (not a good practice but covenient for this assignment).
+
 ### 2- Learning to Rank Algorithms
 
 Two algorithms have beed tested:
-* **XgBoost**
-* **Tensorflow Ranking** *(freshly release in december 2018 👌)*
+* **🌳 [XgBoost](https://github.com/dmlc/xgboost)**: Xgboost is a famous and super performant tree boosting algorithm
+* **🛸 [Tensorflow Ranking](https://github.com/tensorflow/ranking)** *(freshly release in december 2018 👌)*: Tensorflow ranking is a tensorflow framework for learning-to-rank. The package is not available with `pip` so I cloned the repo and made some changes.
 
 For XgBoost, run the command:
 ```

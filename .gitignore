@@ -7,3 +7,7 @@ __pycache__
 *.train
 *.vali
 *.test
+!hn.train
+!hn.test
+!hn.vali
+!hn_data.tsv

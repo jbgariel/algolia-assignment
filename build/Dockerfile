@@ -6,10 +6,11 @@ RUN pip install --no-cache-dir -r requirements.txt; \
     rm -r requirements.txt
 
 COPY build /usr/src/app/build
-COPY data /usr/src/app/data
 COPY notebooks /usr/src/app/notebooks
 
 COPY notebooks/jupyter_notebook_config.py /root/.jupyter/
+
+RUN mkdir data
 
 WORKDIR /usr/src/app
 

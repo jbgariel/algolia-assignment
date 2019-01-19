@@ -138,9 +138,7 @@ def get_estimator(hparams):
 
 
 hparams = tf.contrib.training.HParams(learning_rate=0.05)
-print(hparams)
 ranker = get_estimator(hparams)
-print(ranker)
 
 print(ranker.train(input_fn=lambda: input_fn(_TRAIN_DATA_PATH), steps=100))
 print(ranker.evaluate(input_fn=lambda: input_fn(_TEST_DATA_PATH), steps=100))

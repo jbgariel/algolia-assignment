@@ -6,6 +6,7 @@
 import argparse
 import nltk
 import numpy as np
+import os
 import pandas as pd
 
 from collections import Counter
@@ -19,7 +20,7 @@ from notebooks.utils import import_data
 nltk.download('stopwords', quiet=True)
 
 DATA_DIR = 'data'
-HN_DATA = 'hn_data_1801.tsv'
+HN_DATA = 'hn_data.tsv'
 STOPWORDS = set(stopwords.words("english"))
 
 

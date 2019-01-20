@@ -49,7 +49,7 @@ This notebook propose a serie of performance metrics to evaluate Algolia Search 
 
 ## 3- 👩‍🔬 Learning to Rank experiment
 
-> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widly used by google for its search engine. We could try some experiments to try to improve ranking in returned documents.
+> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widely used by google for its search engine. We could try some experiments to improve ranking in returned documents.
 
 **Could we improve Algolia ranking with machine learning technics?**
 
@@ -103,21 +103,23 @@ docker exec -it algolia-assignement tensorboard --logdir=<ranker.model_dir outpu
 
 ### 3- Evaluation metrics and results
 
-* Due to time constrain (and lack of implemented Learning-to-rank metrics), Xgboost metrics were not computed (there is no standard way of computing metrics) 🤷‍♂️
-* The most complicated part is actually building the training data frame in the LibSVM format (I did not know this format before)
+* Little time was spent on algorithm tuning and results checking, so all results are to be cross-checked 🤞
+* The most complicated part was actually building the training data frame in the LibSVM format (I did not know this format before)
 * ML algorithm are performing well, the training is super fast even without GPUs
-* Tensorflow Ranking increased significally the performance of Algolia Search (see graph below), the average relevance position moved from **4.55** to **3.45** with tensorflow (more than one position gained 🎉!)
+* Both Xgboost and Tensorflow Ranking increased significally the performance of Algolia Search (see graph below for nDCG), the average relevance position moved from **4.55** to **3.45** with tensorflow (more than one position gained 🎉!)
+* Mean Reciprocal Rank is **0.53** for algolia alone, **0.46** for tensorflow and **0.56** for Xgboost
 
 ![alt text](metrics.png)
+*For nDCG explanation see [this page](https://en.wikipedia.org/wiki/Discounted_cumulative_gain)*
 
-**This simple experiment shows the posibility for Algolia to improve its search relevance with machine learning technics 🧙‍♂️. This is only a short analysis and the work is amazingly huge to achieve it (in term of scalability, robusteness of algorithms, data processing, retraining etc..) but this is a super cool topic 😎!**
+**This simple experiment shows the posibility for Algolia to improve its search relevance with machine learning technics 🧙‍♂️. This is only a short analysis and the work is amazingly huge to fully achieve it (in term of scalability, robusteness of algorithms, data processing, retraining etc..) but this is a super cool topic 😎!**
 
 ## Takeaways
 * Algolia search is performing super well 👏 both in time performance and relevance
 * Learning-to-rank is not well documented, this is a secret domain (google is not releasing a lot of stuff on that 🕵️‍♀️)
 * Machine Learning could improve Algolia search relevance and click rate ↗️
 * Algolia could also leverage other data to improve click rate, like users, ip address, history etc..
-* I also found that some Algolia competitors (elasticsearch) are building [ML plugin](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html) for Learning-to-rank
+* I also found that some Algolia competitors (elasticsearch) are building [ML plugins](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html) for Learning-to-rank
 
 
 

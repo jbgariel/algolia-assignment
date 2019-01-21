@@ -113,6 +113,7 @@ def main():
     data = import_data(DATA_DIR)
     if known_args.light:
         data = data.head(1000)
+    assert len(data.index) > 0, 'Please add unzip data in the /data directory'
     print('> Imported {} lines'.format(len(data.index)))
 
     # Filter data

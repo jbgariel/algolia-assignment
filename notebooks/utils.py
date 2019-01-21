@@ -1,4 +1,4 @@
-''' Utils functions for algolia assignement'''
+''' Utils functions for algolia assignment'''
 
 import glob
 import json

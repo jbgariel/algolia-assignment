@@ -1,4 +1,4 @@
-# Algolia Assignement
+# Algolia Assignment
 
 > This repository provide an end-to-end ML experiment and steps to analyze, build and test machine learning models. 
 
@@ -60,10 +60,10 @@ This notebook propose a serie of performance metrics to evaluate Algolia Search 
 
 Run the following commands (remove `--light` flag to compute the whole dataset):
 ```
-docker exec -it algolia-assignement python build_dataset.py --light
+docker exec -it algolia-assignment python build_dataset.py --light
 ```
 
-The data is filtered on query with clicks and at least 2 hits (there is no ranking if only one hit is returned 😉). Some necessary HN data (post title, author, score etc) was queried with a simple script (`docker exec -it algolia-assignement python extract_hn_data.py`), this script took a few hours to run so the data is directly joined to the git repo.
+The data is filtered on query with clicks and at least 2 hits (there is no ranking if only one hit is returned 😉). Some necessary HN data (post title, author, score etc) was queried with a simple script (`docker exec -it algolia-assignment python extract_hn_data.py`), this script took a few hours to run so the data is directly joined to the git repo.
 
 The proposed features are:
 * Keyword match in query
@@ -88,17 +88,17 @@ Two algorithms have beed tested:
 
 For XgBoost, run the command:
 ```
-docker exec -it algolia-assignement python rank_xgboost.py
+docker exec -it algolia-assignment python rank_xgboost.py
 ```
 
 For Tensorflow Ranking, run the command:
 ```
-docker exec -it algolia-assignement python rank_tensorflow.py
+docker exec -it algolia-assignment python rank_tensorflow.py
 ```
 
 Tensorboard logs are saved, to see them:
 ```
-docker exec -it algolia-assignement tensorboard --logdir=<ranker.model_dir output>
+docker exec -it algolia-assignment tensorboard --logdir=<ranker.model_dir output>
 ```
 ...and visit [localhost:6006](http://localhost:6006)
 

@@ -1,11 +1,11 @@
 version: '3.2'
 
 services:
-  algolia-assignement:
+  algolia-assignment:
     build:
       context: .
       dockerfile: build/Dockerfile
-    container_name: algolia-assignement
+    container_name: algolia-assignment
     ports:
      - 9999:9999 # Jupyter notebooks
      - 6006:6006 # Tensorboard

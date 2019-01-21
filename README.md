@@ -21,6 +21,8 @@ Docker:
 
 Clone the repo then build and run the container:
 ```
+cd algolia-assignment
+mkdir data
 docker-compose build
 docker-compose up -d
 ```

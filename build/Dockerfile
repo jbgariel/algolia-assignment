@@ -14,5 +14,5 @@ RUN mkdir data
 
 WORKDIR /usr/src/app
 
-# Flask, Jupyter and Tensorboard ports
-EXPOSE 3000 8888 6006
+# Jupyter and Tensorboard ports
+EXPOSE 9999 6006

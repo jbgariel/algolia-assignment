@@ -139,7 +139,7 @@ def main():
         if idx % 1000 == 0:
             print('  > {}/{}'.format(idx, len(df_expand.index)),
                   end="\r", flush=True)
-        if any(click['object_id'] == row['hit'] for click in row['clicks']):
+        if any(int(click['object_id']) == int(row['hit']) for click in row['clicks']):
             df_expand.loc[idx, 'target'] = 1
     print('> {}/{} rows with clicks in dataframe'.format(sum(df_expand.target), len(df_expand.index)))
 

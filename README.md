@@ -31,6 +31,8 @@ Then copy and paste the unzip data in the `/data` directory
 
 > Jupyter notebook should be activated, go to [hnsearch_analysis](http://localhost:9999/notebooks/hnsearch_analysis.ipynb#)
 
+This notebook is a preliminary analysis of Algolia dataset.
+
 ### Key findings
 * There are some missing lines at the end of each file, I did not take them into account
 * Looks like there are clicking bots (863 clicks in a few seconds for one query)
@@ -49,10 +51,9 @@ This notebook propose a serie of performance metrics to evaluate Algolia Search 
 
 ## 3- 👩‍🔬 Learning to Rank experiment
 
-> Algolia search engine returns a list of ranked document, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widely used by google for its search engine. We could try some experiments to improve ranking in returned documents.
-
 **Could we improve Algolia ranking with machine learning technics?**
 
+> Algolia search engine returns a list of ranked documents, the optimisation of this ranked list is a Learning-to-rank problem. Learning-to-rank is a specific domain of machine learning, widely used by google for its search engine. We could try some experiments to improve ranking in returned documents.
 > ⚠️ Due to time constrains, some shortcuts have been made, like not taking into account filters etc.. I also did not do a lot of algorithm tuning and took out-of-the-box algorithms..
 
 ### 1- Feature Engineering
@@ -82,7 +83,7 @@ The result of this script is three files (`hn.train`, `hn.test` and `hn.vali`). 
 ### 2- Learning to Rank Algorithms
 
 Two algorithms have beed tested:
-* **🌳 [XgBoost](https://github.com/dmlc/xgboost)**: Xgboost is a famous and super performant tree boosting algorithm
+* **🌳 [XgBoost](https://github.com/dmlc/xgboost)**: Xgboost is a famous and super performant tree boosting algorithm.
 * **🛸 [Tensorflow Ranking](https://github.com/tensorflow/ranking)** *(freshly release in december 2018 👌)*: Tensorflow ranking is a tensorflow framework for learning-to-rank. The package is not available with `pip` so I cloned the repo and made some changes.
 
 For XgBoost, run the command:
@@ -112,14 +113,14 @@ docker exec -it algolia-assignement tensorboard --logdir=<ranker.model_dir outpu
 ![alt text](metrics.png)
 *For nDCG explanation see [this page](https://en.wikipedia.org/wiki/Discounted_cumulative_gain)*
 
-**This simple experiment shows the posibility for Algolia to improve its search relevance with machine learning technics 🧙‍♂️. This is only a short analysis and the work is amazingly huge to fully achieve it (in term of scalability, robusteness of algorithms, data processing, retraining etc..) but this is a super cool topic 😎!**
+**This simple experiment shows the posibilities for Algolia to improve its search relevance with machine learning technics 🧙‍♂️. This is only a short analysis and the work is amazingly huge to fully achieve it (in term of scalability, robusteness of algorithms, data processing, retraining etc..) but this is a super cool topic 😎!**
 
 ## Takeaways
 * Algolia search is performing super well 👏 both in time performance and relevance
 * Learning-to-rank is not well documented, this is a secret domain (google is not releasing a lot of stuff on that 🕵️‍♀️)
 * Machine Learning could improve Algolia search relevance and click rate ↗️
 * Algolia could also leverage other data to improve click rate, like users, ip address, history etc..
-* I also found that some Algolia competitors (elasticsearch) are building [ML plugins](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html) for Learning-to-rank
+* I also found that some Algolia competitors are already building ML plugins for Learning-to-rank ([elasticsearch](https://elasticsearch-learning-to-rank.readthedocs.io/en/latest/index.html), [solr](https://lucene.apache.org/solr/guide/6_6/learning-to-rank.html))
 
 
 

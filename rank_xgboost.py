@@ -95,7 +95,7 @@ def main():
         print('Algolia clicks are: {}'.format(y_test[prevsum:prevsum + group_test[line]]))
         print('Predictions are: {}'.format(pred[prevsum:prevsum + group_test[line]]))
         print('Xgboost clicks are: {}'.format(data_predict[line]))
-    print_random_sample(89)
+    print_random_sample(1)
 
     print('> Mean reciprocal rank is : {}'.format(
         mean_reciprocal_rank(data_predict)))
